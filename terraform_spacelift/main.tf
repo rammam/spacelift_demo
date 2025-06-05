@@ -10,18 +10,81 @@ terraform {
 
     }
 
+    tls = {
+
+      source  = "hashicorp/tls"
+
+      version = "~> 4.0"
+
+    }
+
   }
 
   required_version = ">= 1.1.0"
 
 }
 
-
 provider "azurerm" {
 
   features {}
 
 }
+
+# Generate a new RSA SSH key pair
+
+resource "tls_private_key" "demo_key" {
+
+  algorithm = "RSA"
+
+  rsa_bits  = 4096
+
+}
+
+
+# Optionally: store private key in Azure Key Vault (example)
+
+resource "azurerm_key_vault" "kv" {
+
+  name                        = "kv-demo-${random_integer.suffix.result}"
+
+  location                    = var.location
+
+  resource_group_name         = azurerm_resource_group.main.name
+
+  sku_name                    = "standard"
+
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+
+  soft_delete_retention_days  = 7
+
+  purge_protection_enabled    = false
+
+}
+
+
+resource "random_integer" "suffix" {
+
+  min = 10000
+
+  max = 99999
+
+}
+
+
+resource "azurerm_key_vault_secret" "private_key_secret" {
+
+  name         = "debian-vm-private-key"
+
+  value        = tls_private_key.demo_key.private_key_pem
+
+  key_vault_id = azurerm_key_vault.kv.id
+
+}
+
+
+# Data source to get tenant ID for Key Vault
+
+data "azurerm_client_config" "current" {}
 
 # Resource Group
 
@@ -202,7 +265,7 @@ resource "azurerm_linux_virtual_machine" "debian_vm" {
 
     username   = "azureuser"
 
-    public_key = var.vm_ssh_public_key
+    public_key = tls_private_key.demo_key.public_key_openssh
 
   }
 
