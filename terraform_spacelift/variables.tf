@@ -18,12 +18,3 @@ variable "resource_group_name" {
   default     = "rg-vpc-example"
 
 }
-
-
-variable "vm_ssh_public_key" {
-
-  description = "SSH public key for VM"
-
-  type        = string
-
-}
