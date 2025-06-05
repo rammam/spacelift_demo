@@ -24,6 +24,11 @@
         enabled: yes
       when: not ansible_check_mode  # Skip this task when in check mode
 
+    - name: Delete content & directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ web_root }}/index.html"
+
     - name: Deploy custom index.html
       copy:
         dest: "{{ web_root }}/index.html"
