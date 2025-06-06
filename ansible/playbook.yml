@@ -32,7 +32,10 @@
           <html>
           <body>
             <h1>Hello from Ansible!</h1>
-            <p>Deployed via Spacelift!!!!!!!!!!!!!!!!!!!!!!!!!!!!</p>
+            <p>Deployed via Spacelift</p>
+            <p>BELLO Hlaid</p>
+            <p>MBANZA Roger</p>
+            <p>NGOUALAMANKESSI Dévoue</p>
           </body>
           </html>
       notify: Reload Apache
